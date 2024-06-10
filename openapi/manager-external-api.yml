@@ -1,0 +1,1729 @@
+openapi: 3.0.0
+info:
+  title: Preservation Manager Public API
+  description: Public API for the Preservation Manager.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8484/api
+    description: Local server
+tags:
+  - name: PreservationManager
+    description: Public PreservationManager operations
+paths:
+  /ingest/bag:
+    post:
+      tags:
+        - PreservationManager
+      summary: Ingests the objects in a BagIt bag
+      operationId: ingestBag
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/IngestBagRequest'
+      responses:
+        200:
+          description: Ingest Batch was successfully received, but not processed yet.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestBagResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/{ingestId}:
+    get:
+      tags:
+        - PreservationManager
+      summary: Retrieves Ingest Batch details
+      operationId: retrieveBatch
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/ingestIdInPath'
+      responses:
+        200:
+          description: Ingest Batch details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveBatchResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/{ingestId}/objects:
+    get:
+      tags:
+        - PreservationManager
+      summary: Retrieves Ingest Batch Objects
+      operationId: retrieveBatchObjects
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/ingestIdInPath'
+        - $ref: 'shared-components.yml#/components/parameters/pageSizeInQueryOptional'
+        - $ref: 'shared-components.yml#/components/parameters/pageInQueryOptional'
+        - $ref: 'shared-components.yml#/components/parameters/hasProblemsInQueryOptional'
+      responses:
+        200:
+          description: Ingest Batch Object details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveBatchObjectsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/object:
+    get:
+      tags:
+        - PreservationManager
+      summary: Retrieves details about an Ingest Batch Object
+      operationId: retrieveBatchObject
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/ingestIdInQuery'
+        - $ref: 'shared-components.yml#/components/parameters/externalObjectIdInQuery'
+      responses:
+        200:
+          description: Ingest Batch Object details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveBatchObjectResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/object/files:
+    get:
+      tags:
+        - PreservationManager
+      summary: Retrieves the files associated to an Ingest Batch Object
+      operationId: retrieveBatchObjectFiles
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/ingestIdInQuery'
+        - $ref: 'shared-components.yml#/components/parameters/externalObjectIdInQuery'
+      responses:
+        200:
+          description: Ingest Batch Object files
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveBatchObjectFilesResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/object/file:
+    get:
+      tags:
+        - PreservationManager
+      summary: Retrieves a specific file associated to an Ingest Batch Object
+      operationId: retrieveBatchObjectFile
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/ingestIdInQuery'
+        - $ref: 'shared-components.yml#/components/parameters/externalObjectIdInQuery'
+        - $ref: 'shared-components.yml#/components/parameters/filePathInQuery'
+      responses:
+        200:
+          description: Ingest Batch Object file
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveBatchObjectFileResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/object/diff:
+    get:
+      tags:
+        - PreservationManager
+      summary: Diffs the batch object against the current state of the object in the preservation system
+      operationId: diffBatchObject
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/ingestIdInQuery'
+        - $ref: 'shared-components.yml#/components/parameters/externalObjectIdInQuery'
+      responses:
+        200:
+          description: Batch object diff
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiffBatchObjectResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/reject:
+    post:
+      tags:
+        - PreservationManager
+      summary: Rejects a batch for ingestion
+      operationId: rejectIngestBatch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectIngestBatchRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/approve:
+    post:
+      tags:
+        - PreservationManager
+      summary: Approves a batch for ingestion
+      operationId: approveIngestBatch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApproveIngestBatchRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/retryIngest:
+    post:
+      tags:
+        - PreservationManager
+      summary: Retries a batch ingest if it has failed
+      operationId: retryBatchIngest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRetryIngestRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/retryReplicate:
+    post:
+      tags:
+        - PreservationManager
+      summary: Retries a batch replicate if it has failed
+      operationId: retryBatchReplicate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRetryReplicateRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/object/approve:
+    post:
+      tags:
+        - PreservationManager
+      summary: Approves an object for ingestion
+      operationId: approveIngestObject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApproveIngestObjectRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/object/reject:
+    post:
+      tags:
+        - PreservationManager
+      summary: Rejects an object for ingestion
+      operationId: rejectIngestObject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectIngestObjectRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/{ingestId}/event:
+    get:
+      tags:
+        - PreservationManager
+      summary: Retrieves all of the events associated to the batch. This does not include events associated to objects in the batch
+      operationId: retrieveBatchEvents
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/ingestIdInPath'
+      responses:
+        200:
+          description: Batch events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveEventsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/object/event:
+    get:
+      tags:
+        - PreservationManager
+      summary: Retrieves all of the events associated to the object in the batch
+      operationId: retrieveBatchObjectEvents
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/ingestIdInQuery'
+        - $ref: 'shared-components.yml#/components/parameters/externalObjectIdInQuery'
+      responses:
+        200:
+          description: Object events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveEventsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/search:
+    get:
+      tags:
+        - PreservationManager
+      summary: Search for batches
+      operationId: searchBatches
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/orgNameInQueryOptional'
+        - $ref: 'shared-components.yml#/components/parameters/vaultsInQueryOptional'
+        - $ref: 'shared-components.yml#/components/parameters/statesInQueryOptional'
+        - $ref: 'shared-components.yml#/components/parameters/pageSizeInQueryOptional'
+        - $ref: 'shared-components.yml#/components/parameters/pageInQueryOptional'
+      responses:
+        200:
+          description: Batch search results sorted by the batch updated timestamp in reverse chronological order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchSearchResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /vault/{orgName}:
+    get:
+      tags:
+        - PreservationManager
+      summary: Lists all vaults for an organization
+      operationId: listVaults
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/orgNameInPath'
+      responses:
+        200:
+          description: List of vaults
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListVaultsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /vault/{orgName}/permission:
+    get:
+      tags:
+        - PreservationManager
+      summary: List all of the vaults in an org along with the user's permissions
+      operationId: listOrgUserVaultPermissions
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/orgNameInPath'
+        - $ref: 'shared-components.yml#/components/parameters/usernameInQueryOptional'
+      responses:
+        200:
+          description: List of all vaults in an org along with the user's permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListVaultPermissionsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /vault/{vault}/user:
+    get:
+      tags:
+        - PreservationManager
+      summary: Retrieves a list of users with read or write permissions for the given vault
+      operationId: listUsersInVault
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/vaultInPath'
+      responses:
+        200:
+          description: List of all of the users who have access to the given vault along with their permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListVaultUsersResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /vault/{vault}/describe:
+    get:
+      tags:
+        - PreservationManager
+      summary: Returns details about the vault and the current user's permissions in the vault
+      operationId: describeVault
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/vaultInPath'
+      responses:
+        200:
+          description: Details about the vault and the current user's permissions in the vault
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribeVaultResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /vault/{vault}/problems:
+    get:
+      tags:
+        - PreservationManager
+      summary: Returns a list of objects within the vault for which storage problems have been identified
+      operationId: listVaultProblems
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/vaultInPath'
+      responses:
+        200:
+          description: List of objects within the vault for which storage problems have been identified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListVaultProblemsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /vault:
+    post:
+      tags:
+        - PreservationManager
+      summary: Creates a new vault for an organization
+      operationId: createVault
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVaultRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /vault/retrieve:
+    post:
+      tags:
+        - PreservationManager
+      summary: Requests the retrieval of preserved objects
+      operationId: retrieveObjects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetrieveObjectsRequest'
+      responses:
+        200:
+          description: The result of the retrieve request operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveObjectsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /vault/retrieve/{requestId}:
+    get:
+      tags:
+        - PreservationManager
+      summary: Describes a retrieve objects request
+      operationId: describeRetrieveRequest
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/requestIdInPath'
+      responses:
+        200:
+          description: Details about a retrieve objects request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribeRetrieveObjectsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /vault/retrieve/{requestId}/retry/{jobId}:
+    post:
+      tags:
+        - PreservationManager
+      summary: Retries a failed retrieve job
+      operationId: retryRetrieveJob
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/requestIdInPath'
+        - $ref: 'shared-components.yml#/components/parameters/jobIdInPath'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /vault/retrieve/download/{jobId}:
+    get:
+      tags:
+        - PreservationManager
+      summary: Downloads the output of a retrieve job
+      operationId: downloadJob
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/jobIdInPath'
+      responses:
+        200:
+          description: OK
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+  /object:
+    get:
+      tags:
+        - PreservationManager
+      summary: Retrieves details about an object version
+      operationId: describePreservationObject
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/vaultInQuery'
+        - $ref: 'shared-components.yml#/components/parameters/externalObjectIdInQuery'
+        - $ref: 'shared-components.yml#/components/parameters/versionInQueryOptional'
+      responses:
+        200:
+          description: Details about a preservation object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribePreservationObjectResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /object/event:
+    get:
+      tags:
+        - PreservationManager
+      summary: Retrieves all of the events associated with an object
+      operationId: retrieveObjectEvents
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/vaultInQuery'
+        - $ref: 'shared-components.yml#/components/parameters/externalObjectIdInQuery'
+      responses:
+        200:
+          description: Object event logs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveEventsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /object/problems/storage:
+    get:
+      tags:
+        - PreservationManager
+      summary: Retrieves details about what storage problems are affecting an object
+      operationId: retrieveObjectStorageProblems
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/vaultInQuery'
+        - $ref: 'shared-components.yml#/components/parameters/externalObjectIdInQuery'
+      responses:
+        200:
+          description: The object's storage problems, if any
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveObjectStorageProblemsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /object/delete:
+    post:
+      tags:
+        - PreservationManager
+      summary: Marks the object as deleted in the database, but does not actually delete any files
+      operationId: deleteObject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteObjectRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /{orgName}/job:
+    get:
+      tags:
+        - PreservationManager
+      summary: Lists jobs
+      operationId: listJobs
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/orgNameInPath'
+      responses:
+        200:
+          description: List of jobs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListJobsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /job/{jobId}:
+    get:
+      tags:
+        - PreservationManager
+      summary: Gets job details
+      operationId: describeJob
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/jobIdInPath'
+      responses:
+        200:
+          description: Job details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribeJobResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /job/validate:
+    post:
+      tags:
+        - PreservationManager
+      summary: Validates the local copy of an object
+      operationId: validateObject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidatePreservationObjectRequest'
+      responses:
+        200:
+          description: Validate object response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidatePreservationObjectResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /job/validateRemote:
+    post:
+      tags:
+        - PreservationManager
+      summary: Validates a remote copy of an object
+      operationId: validateObjectRemote
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidateObjectRemoteRequest'
+      responses:
+        200:
+          description: Validate object response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidateObjectRemoteResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /job/replicate:
+    post:
+      tags:
+        - PreservationManager
+      summary: Replicates an object from local storage to a remote
+      operationId: replicateObject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplicateObjectRequest'
+      responses:
+        200:
+          description: Replicate object response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplicateObjectResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /job/restore:
+    post:
+      tags:
+        - PreservationManager
+      summary: Restores the local copy of an object from a remote source
+      operationId: restoreObject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestorePreservationObjectRequest'
+      responses:
+        200:
+          description: Restore object response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestorePreservationObjectResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /job/executing:
+    get:
+      tags:
+        - PreservationManager
+      summary: Lists jobs that have a state of EXECUTING
+      operationId: listExecutingJobs
+      responses:
+        200:
+          description: List of jobs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListJobsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /job/fail:
+    post:
+      tags:
+        - PreservationManager
+      summary: Marks an executing job as failed. This action can only be completed by a
+        service administrator, and should only be used when a job has a state of executing
+        but is not being executed by a worker.
+      operationId: failJob
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelJobRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /job/cancel:
+    post:
+      tags:
+        - PreservationManager
+      summary: Cancels a pending job
+      operationId: cancelJob
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelJobRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /job/disable:
+    post:
+      tags:
+        - PreservationManager
+      summary: Disables job types from being processed
+      operationId: disableJobTypes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisableJobTypesRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /job/enable:
+    post:
+      tags:
+        - PreservationManager
+      summary: Enables job types from being processed
+      operationId: enableJobTypes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnableJobTypesRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /job/{jobId}/logs:
+    get:
+      tags:
+        - PreservationManager
+      summary: Retrieves all of the logs associated with a job
+      operationId: retrieveJobLogs
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/jobIdInPath'
+      responses:
+        200:
+          description: Ingest logs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveLogsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /user/org:
+    get:
+      tags:
+        - PreservationManager
+      summary: Retrieves a list of all organizations the authenticated user is an active member of
+      operationId: listUserOrgs
+      responses:
+        200:
+          description: List of organizations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListUserOrgsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /user/vault:
+    post:
+      tags:
+        - PreservationManager
+      summary: Updates a user's permissions on a vault. Any existing permissions are overwritten.
+        An empty permission list removes all permissions for the vault.
+      operationId: updateUserVaultPermissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserVaultPermissionsRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /org/{orgName}/user:
+    get:
+      tags:
+        - PreservationManager
+      summary: Retrieves a list of all of the members of an organization
+      operationId: listOrgUsers
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/orgNameInPath'
+      responses:
+        200:
+          description: List of users in an organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOrgUsersResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /org/{orgName}:
+    get:
+      tags:
+        - PreservationManager
+      summary: Describes the specified organization and returns the current user's permissions
+      operationId: describeOrg
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/orgNameInPath'
+      responses:
+        200:
+          description: Details about the specified organization and returns the current user's permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribeOrgResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+    post:
+      tags:
+        - PreservationManager
+      summary: Creates a new organization
+      description: Service adminstrator access is required to create an organization.
+      operationId: createOrg
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/orgNameInPath'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrgRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /org/{orgName}/contact:
+    get:
+      tags:
+        - PreservationManager
+      summary: Returns the primary contact for the organization.
+      operationId: describeOrgContact
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/orgNameInPath'
+      responses:
+        200:
+          description: Details about the primary contact for the organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationContactResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /user:
+    get:
+      tags:
+        - PreservationManager
+      summary: Retrieves details about the current user
+      operationId: describeUser
+      responses:
+        200:
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribeUserResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /system/storage:
+    get:
+      tags:
+        - PreservationManager
+      summary: Retrieves system wide storage details, including a list of all organizations in the
+        system and their storage details
+      operationId: getSystemStorage
+      responses:
+        200:
+          description: Retrieves system wide storage details, including a list of all organizations
+            in the system and their storage details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemStorageResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /system/ingestEventCounts:
+    get:
+      tags:
+        - PreservationManager
+      summary: Counts of all ingest events in the system or organization if specified.
+      operationId: getIngestEventCounts
+      parameters:
+        - in: query
+          name: eventType
+          schema:
+            type: array
+            items:
+              $ref: 'shared-components.yml#/components/schemas/EventType'
+          explode: false
+          description: Array of event types.
+          example: RECEIVE_BAG
+          required: false
+        - in: query
+          name: eventOutcome
+          schema:
+            type: array
+            items:
+              $ref: 'shared-components.yml#/components/schemas/EventOutcome'
+          explode: false
+          description: Array of event outcomes.
+          example: SUCCESS_WITH_WARNINGS
+          required: false
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+          example: 2017-07-21
+          description: The starting date for the event counts.
+          required: true
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+          example: 2017-07-21
+          description: The ending date for the event counts.
+          required: true
+        - in: query
+          name: organizationName
+          schema:
+            type: string
+          description: The ID of the organization.
+          example: organization-id
+          required: false
+      responses:
+        200:
+          description: System wide event counts, grouped by event outcome.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemEventCountsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /system/preservationEventCounts:
+    get:
+      tags:
+        - PreservationManager
+      summary: Counts of all preservation events in the system or organization if specified.
+      operationId: getPreservationEventCounts
+      parameters:
+        - in: query
+          name: eventType
+          schema:
+            type: array
+            items:
+              $ref: 'shared-components.yml#/components/schemas/EventType'
+          explode: false
+          description: Array of event types.
+          example: RECEIVE_BAG
+          required: false
+        - in: query
+          name: eventOutcome
+          schema:
+            type: array
+            items:
+              $ref: 'shared-components.yml#/components/schemas/EventOutcome'
+          explode: false
+          description: Array of event outcomes.
+          example: SUCCESS_WITH_WARNINGS
+          required: false
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+          example: 2017-07-21
+          description: The starting date for the event counts.
+          required: true
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+          example: 2017-07-21
+          description: The ending date for the event counts.
+          required: true
+        - in: query
+          name: organizationName
+          schema:
+            type: string
+          description: The ID of the organization.
+          example: organization-id
+          required: false
+      responses:
+        200:
+          description: System wide event counts, grouped by event outcome.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemEventCountsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+components:
+  schemas:
+    IngestBagRequest:
+      properties:
+        vault:
+          $ref: 'shared-components.yml#/components/schemas/Vault'
+        file:
+          description: BagIt bag containing the objects to ingest. Must be a zip file.
+          type: string
+          format: binary
+      required:
+        - vault
+        - file
+    IngestBagResponse:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+      required:
+        - ingestId
+    RetrieveBatchResponse:
+      properties:
+        ingestBatch:
+          $ref: 'shared-components.yml#/components/schemas/IngestBatchSummary'
+      required:
+        - ingestBatch
+    RetrieveBatchObjectsResponse:
+      properties:
+        page:
+          $ref: 'shared-components.yml#/components/schemas/Page'
+        totalPages:
+          $ref: 'shared-components.yml#/components/schemas/TotalPages'
+        totalResults:
+          $ref: 'shared-components.yml#/components/schemas/TotalResults'
+        batchObjects:
+          description: The objects associated to the batch
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/IngestBatchObject'
+      required:
+        - page
+        - totalPages
+        - totalResults
+        - batchObjects
+    RetrieveBatchObjectResponse:
+      properties:
+        batchObject:
+          $ref: 'shared-components.yml#/components/schemas/IngestBatchObject'
+      required:
+        - batchObject
+    RetrieveBatchObjectFilesResponse:
+      properties:
+        files:
+          description: The files associated to the object
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/ObjectFile'
+      required:
+        - files
+    RetrieveBatchObjectFileResponse:
+      properties:
+        file:
+          $ref: 'shared-components.yml#/components/schemas/ObjectFile'
+      required:
+        - file
+    ApproveIngestBatchRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+        reviewedTimestamp:
+          description: Timestamp the batch changes were reviewed. Used to ensure that the approved
+            objects were not changed since then. Can be null to use the current time.
+          example: 2020-03-13T19:44:22.198+0000
+          type: string
+          format: date-time
+      required:
+        - ingestId
+    RejectIngestBatchRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+      required:
+        - ingestId
+    BatchRetryIngestRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+      required:
+        - ingestId
+    BatchRetryReplicateRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+      required:
+        - ingestId
+    UpdateIngestObjectStateRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+        externalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+        state:
+          $ref: 'shared-components.yml#/components/schemas/IngestObjectState'
+      required:
+        - ingestId
+        - externalObjectId
+        - state
+    ApproveIngestObjectRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+        externalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+        reviewedTimestamp:
+          description: Timestamp the object changes were reviewed. Used to ensure that the object
+            was not changed since then. Can be null to use the current time.
+          example: 2020-03-13T19:44:22.198+0000
+          type: string
+          format: date-time
+      required:
+        - ingestId
+        - externalObjectId
+    RejectIngestObjectRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+        externalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+      required:
+        - ingestId
+        - externalObjectId
+    DescribePreservationObjectResponse:
+      properties:
+        vault:
+          $ref: 'shared-components.yml#/components/schemas/Vault'
+        externalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+        version:
+          $ref: 'shared-components.yml#/components/schemas/Version'
+        latestVersion:
+          $ref: 'shared-components.yml#/components/schemas/Version'
+        state:
+          $ref: 'shared-components.yml#/components/schemas/PreservationObjectState'
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+        objectCreatedTimestamp:
+          description: Timestamp the first version of the object was created
+          example: 2020-03-13T19:44:22.198+0000
+          type: string
+          format: date-time
+        versionCreatedTimestamp:
+          description: Timestamp this object version was created
+          example: 2020-03-13T19:44:22.198+0000
+          type: string
+          format: date-time
+        lastShallowCheck:
+          description: Timestamp the object last had a shallow validation check
+          example: 2020-03-13T19:44:22.198+0000
+          type: string
+          format: date-time
+        lastDeepCheck:
+          description: Timestamp the object last had a deep validation check
+          example: 2020-03-13T19:44:22.198+0000
+          type: string
+          format: date-time
+        remoteVersionCheck:
+          description: When this object version was last checked in remote storage locations
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/RemoteVersionCheck'
+        files:
+          description: The files contained in this version of the object
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/ObjectFile'
+    RestorePreservationObjectRequest:
+      properties:
+        vault:
+          $ref: 'shared-components.yml#/components/schemas/Vault'
+        externalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+        versions:
+          description: Optional, versions to restore
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/PersistenceVersion'
+      required:
+        - vault
+        - externalObjectId
+    RestorePreservationObjectResponse:
+      properties:
+        jobId:
+          $ref: 'shared-components.yml#/components/schemas/JobId'
+    ValidatePreservationObjectRequest:
+      properties:
+        vault:
+          $ref: 'shared-components.yml#/components/schemas/Vault'
+        externalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+        contentFixityCheck:
+          description: True if the digests of all files in the ocfl object should be validated
+          example: true
+          type: boolean
+      required:
+        - vault
+        - externalObjectId
+        - contentFixityCheck
+    ValidatePreservationObjectResponse:
+      properties:
+        jobId:
+          $ref: 'shared-components.yml#/components/schemas/JobId'
+    ValidateObjectRemoteRequest:
+      properties:
+        vault:
+          $ref: 'shared-components.yml#/components/schemas/Vault'
+        externalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+        dataStore:
+          $ref: 'shared-components.yml#/components/schemas/DataStore'
+        versions:
+          description: Optional, versions to restore. If not specified all versions are validated
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/PersistenceVersion'
+      required:
+        - vault
+        - externalObjectId
+        - dataStore
+    ValidateObjectRemoteResponse:
+      properties:
+        jobIds:
+          description: List of job ids for the created validation jobs
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/JobId'
+    ReplicateObjectRequest:
+      properties:
+        vault:
+          $ref: 'shared-components.yml#/components/schemas/Vault'
+        externalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+        destination:
+          $ref: 'shared-components.yml#/components/schemas/DataStore'
+        versions:
+          description: Optional, versions to restore. If not specified all versions are replicated
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/PersistenceVersion'
+      required:
+        - vault
+        - externalObjectId
+        - destination
+    ReplicateObjectResponse:
+      properties:
+        jobIds:
+          description: List of job ids for the created replication jobs
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/JobId'
+    RetrieveEventsResponse:
+      properties:
+        events:
+          description: Events
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/Event'
+    RetrieveLogsResponse:
+      properties:
+        logEntries:
+          description: Log entries
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/LogEntry'
+    RetrieveObjectsRequest:
+      properties:
+        vault:
+          $ref: 'shared-components.yml#/components/schemas/Vault'
+        allVersions:
+          description: true to return every version of each object
+          example: true
+          type: boolean
+        externalObjectIds:
+          description: Objects to retrieve
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+      required:
+        - vault
+    RetrieveObjectsResponse:
+      properties:
+        requestId:
+          description: The id of the retrieval request
+          example: 10293
+          type: integer
+          format: int64
+      required:
+        - requestId
+    RetrieveRequestPart:
+      properties:
+        jobId:
+          $ref: 'shared-components.yml#/components/schemas/JobId'
+        state:
+          description: Indicates the state of this request part
+          type: string
+          enum:
+            - READY
+            - NOT_READY
+            - FAILED
+            - DELETED
+            - CANCELLED
+        lastDownloadedTimestamp:
+          description: Timestamp this part was last downloaded
+          example: 2020-03-13T19:44:22.198+0000
+          type: string
+          format: date-time
+    DescribeRetrieveObjectsResponse:
+      properties:
+        username:
+          $ref: 'shared-components.yml#/components/schemas/Username'
+        vault:
+          $ref: 'shared-components.yml#/components/schemas/Vault'
+        allVersions:
+          description: true to return every version of each object
+          example: true
+          type: boolean
+        externalObjectIds:
+          description: Objects to retrieve
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+        deleted:
+          description: Indicates if the DIPs generated by this request have been deleted
+          example: true
+          type: boolean
+        createdTimestamp:
+          description: Timestamp the request was received
+          example: 2020-03-13T19:44:22.198+0000
+          type: string
+          format: date-time
+        deletedTimestamp:
+          description: Timestamp the DIPS were deleted
+          example: 2020-03-13T19:44:22.198+0000
+          type: string
+          format: date-time
+        parts:
+          description: The parts this request was divided into
+          type: array
+          items:
+            $ref: '#/components/schemas/RetrieveRequestPart'
+    CancelJobRequest:
+      properties:
+        jobId:
+          $ref: 'shared-components.yml#/components/schemas/JobId'
+      required:
+        - jobId
+    ListJobsResponse:
+      properties:
+        jobs:
+          description: List of jobs
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/JobDetails'
+      required:
+        - jobs
+    DescribeJobResponse:
+      properties:
+        job:
+          $ref: 'shared-components.yml#/components/schemas/JobDetails'
+      required:
+        - job
+    RetrieveObjectStorageProblemsResponse:
+      properties:
+        problems:
+          description: List of problems
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/ObjectStorageProblem'
+    ListVaultsResponse:
+      properties:
+        vaults:
+          description: List of vault names and descriptions by organization
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/VaultObject'
+    ListVaultPermissionsResponse:
+      properties:
+        vaultPermissions:
+          description: List of all vaults in an org along with the user's permissions
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/VaultPermissionsWithDescription'
+    CreateVaultRequest:
+      properties:
+        orgName:
+          $ref: 'shared-components.yml#/components/schemas/OrgName'
+        vault:
+          $ref: 'shared-components.yml#/components/schemas/VaultObject'
+      required:
+        - orgName
+        - vault
+    DescribeVaultResponse:
+      properties:
+        orgName:
+          $ref: 'shared-components.yml#/components/schemas/OrgName'
+        vault:
+          $ref: 'shared-components.yml#/components/schemas/VaultObject'
+        objectCount:
+          description: The number of objects in the vault
+          example: 10293
+          type: integer
+          format: int64
+        approximateStorageMegabytes:
+          description: The approximate amount of space occupied by all object content files in the vault in megabytes
+          example: 10293
+          type: integer
+          format: int64
+        permissions:
+          description: The permissions the user has in the vault
+          type: array
+          items:
+            $ref: '#/components/schemas/VaultPermission'
+    ListVaultProblemsResponse:
+      properties:
+        objects:
+          description: List of external objects IDs for objects with storage problems
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+    UserOrganization:
+      properties:
+        orgName:
+          $ref: 'shared-components.yml#/components/schemas/OrgName'
+        displayName:
+          $ref: 'shared-components.yml#/components/schemas/OrgDisplayName'
+        role:
+          $ref: 'shared-components.yml#/components/schemas/Role'
+        authorities:
+          description: List of the user's authorities within the org
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/OrgAuthority'
+    ListUserOrgsResponse:
+      properties:
+        orgs:
+          description: List of organizations
+          type: array
+          items:
+            $ref: '#/components/schemas/UserOrganization'
+    UpdateUserVaultPermissionsRequest:
+      properties:
+        username:
+          $ref: 'shared-components.yml#/components/schemas/Username'
+        vaultPermissions:
+          $ref: 'shared-components.yml#/components/schemas/VaultPermissions'
+    BatchSearchResponse:
+      properties:
+        page:
+          $ref: 'shared-components.yml#/components/schemas/Page'
+        totalPages:
+          $ref: 'shared-components.yml#/components/schemas/TotalPages'
+        totalResults:
+          $ref: 'shared-components.yml#/components/schemas/TotalResults'
+        batches:
+          description: List of batches
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/IngestBatchSummary'
+    ListOrgUsersResponse:
+      properties:
+        users:
+          description: List of users in org
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/OrgUser'
+    DescribeOrgResponse:
+      properties:
+        orgName:
+          $ref: 'shared-components.yml#/components/schemas/OrgName'
+        displayName:
+          $ref: 'shared-components.yml#/components/schemas/OrgDisplayName'
+        role:
+          $ref: 'shared-components.yml#/components/schemas/Role'
+        authorities:
+          description: List of the user's authorities within the org
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/OrgAuthority'
+    CreateOrgRequest:
+      properties:
+        displayName:
+          $ref: 'shared-components.yml#/components/schemas/OrgDisplayName'
+        contactName:
+          $ref: 'shared-components.yml#/components/schemas/ContactName'
+        contactEmail:
+          $ref: 'shared-components.yml#/components/schemas/ContactEmail'
+        contactPhone:
+          $ref: 'shared-components.yml#/components/schemas/ContactPhone'
+      required:
+        - displayName
+        - contactName
+        - contactEmail
+        - contactPhone
+    OrganizationContactResponse:
+      properties:
+        contactName:
+          $ref: 'shared-components.yml#/components/schemas/ContactName'
+        contactEmail:
+          $ref: 'shared-components.yml#/components/schemas/ContactEmail'
+        contactPhone:
+          $ref: 'shared-components.yml#/components/schemas/ContactPhone'
+    ListVaultUsersResponse:
+      properties:
+        users:
+          description: List of users in vault
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/VaultUser'
+    DescribeUserResponse:
+      properties:
+        user:
+          $ref: 'shared-components.yml#/components/schemas/User'
+    DiffBatchObjectResponse:
+      properties:
+        hasChanges:
+          description: Indicates if the object contains any file changes from what was previously preserved
+          example: true
+          type: boolean
+        files:
+          description: List of files diffed
+          type: array
+          items:
+            $ref: '#/components/schemas/FileDiff'
+    FileDiff:
+      properties:
+        path:
+          $ref: 'shared-components.yml#/components/schemas/FilePath'
+        newSha256Digest:
+          description: The sha256 digest of the file in the batch
+          example: 1ff0a30eedd7819f4552179c94ea89ed03f5d1a4265fcd0f971ebe7bc17317cf
+          type: string
+        oldSha256Digest:
+          description: The sha256 digest of the file in the preserved object
+          example: 1ff0a30eedd7819f4552179c94ea89ed03f5d1a4265fcd0f971ebe7bc17317cf
+          type: string
+        diff:
+          description: The relationship between the batch object file and the preserved object file
+          type: string
+          enum:
+            - ADDED
+            - REMOVED
+            - MODIFIED
+            - UNCHANGED
+        formatDiff:
+          $ref: '#/components/schemas/FormatDiff'
+        encodingDiff:
+          $ref: '#/components/schemas/EncodingDiff'
+        validityDiff:
+          $ref: '#/components/schemas/ValidityDiff'
+    FormatDiff:
+      properties:
+        added:
+          description: Newly identified formats
+          type: array
+          items:
+            $ref: '#/components/schemas/Format'
+        removed:
+          description: Removed formats
+          type: array
+          items:
+            $ref: '#/components/schemas/Format'
+        unchanged:
+          description: Unchanged formats
+          type: array
+          items:
+            $ref: '#/components/schemas/Format'
+    Format:
+      properties:
+        format:
+          $ref: 'shared-components.yml#/components/schemas/FileFormatName'
+        registry:
+          $ref: 'shared-components.yml#/components/schemas/FormatRegistry'
+    EncodingDiff:
+      properties:
+        added:
+          description: Newly identified encodings
+          type: array
+          items:
+            type: string
+        removed:
+          description: Removed encodings
+          type: array
+          items:
+            type: string
+        unchanged:
+          description: Unchanged encodings
+          type: array
+          items:
+            type: string
+    ValidityDiff:
+      properties:
+        added:
+          description: New validities
+          type: array
+          items:
+            $ref: '#/components/schemas/Validity'
+        removed:
+          description: Removed validities
+          type: array
+          items:
+            $ref: '#/components/schemas/Validity'
+        unchanged:
+          description: Unchanged validities
+          type: array
+          items:
+            $ref: '#/components/schemas/Validity'
+    Validity:
+      properties:
+        valid:
+          $ref: 'shared-components.yml#/components/schemas/FileValid'
+        wellFormed:
+          $ref: 'shared-components.yml#/components/schemas/FileWellFormed'
+    DeleteObjectRequest:
+      properties:
+        vault:
+          $ref: 'shared-components.yml#/components/schemas/Vault'
+        externalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+        reason:
+          description: Reason for the deletion
+          example: Deletion requested by so-and-so for legal reasons
+          type: string
+      required:
+        - vault
+        - externalObjectId
+        - reason
+    SystemStorageOrgDetails:
+      properties:
+        orgName:
+          $ref: 'shared-components.yml#/components/schemas/OrgName'
+        displayName:
+          $ref: 'shared-components.yml#/components/schemas/OrgDisplayName'
+        objectCount:
+          description: The total number of objects in the org
+          example: 10293
+          type: integer
+          format: int64
+        storageMegabytes:
+          description: The approximate amount of space occupied by all object content files in the org in megabytes
+          example: 10293
+          type: integer
+          format: int64
+    SystemStorageResponse:
+      properties:
+        totalObjectCount:
+          description: The total number of objects in the system
+          example: 10293
+          type: integer
+          format: int64
+        totalStorageMegabytes:
+          description: The approximate amount of space occupied by all object content files in the system in megabytes
+          example: 10293
+          type: integer
+          format: int64
+        organizations:
+          description: Organization level storage details
+          type: array
+          items:
+            $ref: '#/components/schemas/SystemStorageOrgDetails'
+    EventOutcomeCount:
+      properties:
+        success:
+          description: Count of events with outcome 'SUCCESS'.
+          example: 10293
+          type: integer
+          format: int64
+        failure:
+          description: Count of events with outcome 'FAILURE'.
+          example: 10293
+          type: integer
+          format: int64
+        successWithWarnings:
+          description: Count of events with outcome 'SUCCESS_WITH_WARNINGS'.
+          example: 10293
+          type: integer
+          format: int64
+        approved:
+          description: Count of events with outcome 'APPROVED'.
+          example: 10293
+          type: integer
+          format: int64
+        rejected:
+          description: Count of events with outcome 'REJECTED'.
+          example: 10293
+          type: integer
+          format: int64
+        notExecuted:
+          description: Count of events with outcome 'NOT_EXECUTED'.
+          example: 10293
+          type: integer
+          format: int64
+    EventCounts:
+      properties:
+        eventType:
+          $ref: 'shared-components.yml#/components/schemas/EventType'
+        eventCountsByOutcome:
+          $ref: '#/components/schemas/EventOutcomeCount'
+    SystemEventCountsResponse:
+      properties:
+        eventCounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventCounts'
+    DisableJobTypesRequest:
+      properties:
+        types:
+          description: Job types to disable or an empty list to disable all types
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/JobType'
+    EnableJobTypesRequest:
+      properties:
+        types:
+          description: Job types to enable or an empty list to enable all types
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/JobType'
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+security:
+  - ApiKeyAuth: []

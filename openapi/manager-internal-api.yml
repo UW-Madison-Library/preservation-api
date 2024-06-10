@@ -1,0 +1,1122 @@
+openapi: 3.0.0
+info:
+  title: Preservation Manager Internal API
+  description: Internal API for the Preservation Manager.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8484/internal/api
+    description: Local server
+tags:
+  - name: ManagerInternal
+    description: Internal Preservation Manager operations
+paths:
+  /batch/{ingestId}:
+    get:
+      tags:
+        - ManagerInternal
+      summary: Retrieves Ingest Batch details
+      operationId: retrieveBatch
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/ingestIdInPath'
+      responses:
+        200:
+          description: Ingest Batch details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveBatchResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/{ingestId}/ingest:
+    get:
+      tags:
+        - ManagerInternal
+      summary: Retrieves all of the details about batch objects that are ready for ingest
+      operationId: retrieveBatchIngest
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/ingestIdInPath'
+      responses:
+        200:
+          description: Ingest Batch details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveBatchIngestResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/startAnalysis:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Transitions a batch into an analysis state
+      operationId: batchStartAnalysis
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchStartAnalysisRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/completeAnalysis:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Transitions a batch out of an analysis state
+      operationId: batchCompleteAnalysis
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchCompleteAnalysisRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/startRejecting:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Transitions a batch into a rejecting state
+      operationId: batchStartRejecting
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchStartRejectingRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/completeRejecting:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Transitions a batch out of a rejecting state
+      operationId: batchCompleteRejecting
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchCompleteRejectingRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/startIngesting:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Transitions a batch into an ingesting state
+      operationId: batchStartIngesting
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchStartIngestingRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/completeIngesting:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Transitions a batch out of an ingesting state
+      operationId: batchCompleteIngesting
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchCompleteIngestingRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/markDeleted:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Transitions a batch to a deleted state
+      operationId: batchMarkDeleted
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchMarkDeletedRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/object:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Registers an object to a batch
+      operationId: registerIngestObject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterIngestObjectRequest'
+      responses:
+        200:
+          description: Register ingest object response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterIngestObjectResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/object/file:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Registers a file to an object in a batch
+      operationId: registerIngestObjectFile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterIngestObjectFileRequest'
+      responses:
+        200:
+          description: Register ingest object file response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterIngestObjectFileResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/object/file/details:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Adds details to an ingest object file
+      operationId: registerIngestObjectFileDetails
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterIngestObjectFileDetailsRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/object/completeAnalysis:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Transitions a batch out of an analysis state
+      operationId: objectCompleteAnalysis
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectCompleteAnalysisRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/object/startIngesting:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Transitions a batch into an ingesting state
+      operationId: objectStartIngesting
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectStartIngestingRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/object/completeIngesting:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Transitions a batch out of an ingesting state
+      operationId: objectCompleteIngesting
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectCompleteIngestingRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/event:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Record ingest event
+      operationId: recordIngestEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordIngestEventRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /batch/shouldDelete:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Check if the batch is old and should be deleted
+      operationId: shouldDeleteBatch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShouldDeleteBatchRequest'
+      responses:
+        200:
+          description: Indicates if the batch should be deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShouldDeleteBatchResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /object/version:
+    put:
+      tags:
+        - ManagerInternal
+      summary: Creates a new version of a preservation object
+      operationId: createObjectVersion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateObjectVersionRequest'
+      responses:
+        200:
+          description: Details about the new version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateObjectVersionResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+    delete:
+      tags:
+        - ManagerInternal
+      summary: Deletes a preservation object version
+      operationId: deleteObjectVersion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteObjectVersionRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /object/version/finalize:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Finalizes the creation of a new object version and sets it to HEAD
+      operationId: finalizeObjectVersion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinalizeObjectVersionRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /object/version/replicated:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Marks an object version as being replicated to a data store
+      operationId: objectVersionReplicated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectVersionReplicatedRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /object/premis:
+    get:
+      tags:
+        - ManagerInternal
+      summary: Generates a PREMIS document for the object
+      operationId: getPremisDocument
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/internalObjectIdInQuery'
+        - in: query
+          name: versionNumbers
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int32
+          description: List of versions to include in PREMIS
+          required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/xml:
+              schema:
+                type: string
+                format: binary
+  /object/{internalObjectId}/versionStates:
+    get:
+      tags:
+        - ManagerInternal
+      summary: Describes the version state of every version of an object
+      operationId: getObjectVersionStates
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/internalObjectIdInPath'
+      responses:
+        200:
+          description: Details about the state of every version of an object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribeObjectVersionStatesResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /object/{internalObjectId}/persistenceVersion/{persistenceVersion}/filesNewInVersion:
+    get:
+      tags:
+        - ManagerInternal
+      summary: Retrieves a list of all of the files that were introduced to the object in the specified persistence version
+      operationId: retrieveNewInVersionFiles
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/internalObjectIdInPath'
+        - $ref: 'shared-components.yml#/components/parameters/persistenceVersionInPath'
+      responses:
+        200:
+          description: Files new to the object in the specified version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveNewInVersionFilesResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /object/problems/storage:
+    put:
+      tags:
+        - ManagerInternal
+      summary: Sets an object's storage problems
+      operationId: setObjectStorageProblems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetObjectStorageProblemsRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+    get:
+      tags:
+        - ManagerInternal
+      summary: Retrieves details about what storage problems are affecting an object
+      operationId: getObjectStorageProblems
+      parameters:
+        - $ref: 'shared-components.yml#/components/parameters/internalObjectIdInQuery'
+      responses:
+        200:
+          description: The object's storage problems, if any
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetObjectStorageProblemsResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /object/event:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Record preservation event
+      operationId: recordPreservationEvent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordPreservationEventRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /job/state:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Updates the state of a job
+      operationId: updateJobState
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobStateRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /job/defer:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Defers a job if it is not ready to be processed
+      operationId: defer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeferJobRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /job/logs:
+    post:
+      tags:
+        - ManagerInternal
+      summary: Adds logs to a job
+      operationId: recordJobLogs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordJobLogsRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+  /job/poll:
+    get:
+      tags:
+        - ManagerInternal
+      summary: Long poll for a job to process
+      operationId: pollForJob
+      responses:
+        200:
+          description: A job to process
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobPollResponse'
+        400:
+          $ref: 'shared-components.yml#/components/responses/ErrorResponse'
+components:
+  schemas:
+    Job:
+      properties:
+        jobId:
+          $ref: 'shared-components.yml#/components/schemas/JobId'
+      required:
+        - jobId
+    FinalizeRestoreJob:
+      allOf:
+        - $ref: '#/components/schemas/Job'
+        - type: object
+          properties:
+            internalObjectId:
+              $ref: 'shared-components.yml#/components/schemas/InternalObjectId'
+          required:
+            - internalObjectId
+    ProcessBatchJob:
+      allOf:
+        - $ref: '#/components/schemas/Job'
+        - type: object
+          properties:
+            ingestId:
+              $ref: 'shared-components.yml#/components/schemas/IngestId'
+          required:
+            - ingestId
+    ReplicateJob:
+      allOf:
+        - $ref: '#/components/schemas/Job'
+        - type: object
+          properties:
+            internalObjectId:
+              $ref: 'shared-components.yml#/components/schemas/InternalObjectId'
+            vault:
+              $ref: 'shared-components.yml#/components/schemas/Vault'
+            externalObjectId:
+              $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+            persistenceVersion:
+              $ref: 'shared-components.yml#/components/schemas/PersistenceVersion'
+            source:
+              $ref: 'shared-components.yml#/components/schemas/DataStore'
+            destination:
+              $ref: 'shared-components.yml#/components/schemas/DataStore'
+          required:
+            - internalObjectId
+            - vault
+            - externalObjectId
+            - persistenceVersion
+            - source
+            - destination
+    RestoreJob:
+      allOf:
+        - $ref: '#/components/schemas/Job'
+        - type: object
+          properties:
+            internalObjectId:
+              $ref: 'shared-components.yml#/components/schemas/InternalObjectId'
+            persistenceVersion:
+              $ref: 'shared-components.yml#/components/schemas/PersistenceVersion'
+            source:
+              $ref: 'shared-components.yml#/components/schemas/DataStore'
+            key:
+              description: The identifier of the object version in the remote store
+              example: xasdfuq3rns.zip
+              type: string
+            sha256Digest:
+              $ref: 'shared-components.yml#/components/schemas/Sha256Digest'
+          required:
+            - internalObjectId
+            - persistenceVersion
+            - source
+            - key
+            - sha256Digest
+    ObjectInfo:
+      properties:
+        internalId:
+          $ref: 'shared-components.yml#/components/schemas/InternalObjectId'
+        externalId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+        version:
+          $ref: 'shared-components.yml#/components/schemas/Version'
+        persistenceVersion:
+          $ref: 'shared-components.yml#/components/schemas/PersistenceVersion'
+    RetrieveJob:
+      allOf:
+        - $ref: '#/components/schemas/Job'
+        - type: object
+          properties:
+            objects:
+              description: The ids of the objects to retrieve
+              type: array
+              items:
+                $ref: '#/components/schemas/ObjectInfo'
+          required:
+            - objects
+    ValidateLocalJob:
+      allOf:
+        - $ref: '#/components/schemas/Job'
+        - type: object
+          properties:
+            internalObjectId:
+              $ref: 'shared-components.yml#/components/schemas/InternalObjectId'
+            contentFixityCheck:
+              description: True if the digests of all files in the ocfl object should be validated
+              example: true
+              type: boolean
+          required:
+            - internalObjectId
+            - contentFixityCheck
+    ValidateRemoteJob:
+      allOf:
+        - $ref: '#/components/schemas/Job'
+        - type: object
+          properties:
+            internalObjectId:
+              $ref: 'shared-components.yml#/components/schemas/InternalObjectId'
+            persistenceVersion:
+              $ref: 'shared-components.yml#/components/schemas/PersistenceVersion'
+            dataStore:
+              $ref: 'shared-components.yml#/components/schemas/DataStore'
+            dataStoreKey:
+              description: The key the version is stored at in the datastore
+              type: string
+            sha256Digest:
+              $ref: 'shared-components.yml#/components/schemas/Sha256Digest'
+          required:
+            - internalObjectId
+            - persistenceVersion
+            - dataStore
+            - dataStoreKey
+            - sha256Digest
+    DeleteDipJob:
+      allOf:
+        - $ref: '#/components/schemas/Job'
+        - type: object
+          properties:
+            retrieveRequestId:
+              description: The id of the retrieval request
+              example: 10293
+              type: integer
+              format: int64
+            retrieveJobIds:
+              type: array
+              description: The job ids that are part of the retrieve request
+              items:
+                $ref: 'shared-components.yml#/components/schemas/JobId'
+          required:
+            - retrieveRequestId
+            - retrieveJobIds
+    CleanupSipsJob:
+      allOf:
+        - $ref: '#/components/schemas/Job'
+        - type: object
+    JobPollResponse:
+      properties:
+        # FIXME Ugly hack because polymorphism is not currently supported https://github.com/OpenAPITools/openapi-generator/issues/10514
+        jobType:
+          $ref: 'shared-components.yml#/components/schemas/JobType'
+        finalizeRestoreJob:
+          $ref: '#/components/schemas/FinalizeRestoreJob'
+        processBatchJob:
+          $ref: '#/components/schemas/ProcessBatchJob'
+        replicateJob:
+          $ref: '#/components/schemas/ReplicateJob'
+        restoreJob:
+          $ref: '#/components/schemas/RestoreJob'
+        retrieveJob:
+          $ref: '#/components/schemas/RetrieveJob'
+        validateLocalJob:
+          $ref: '#/components/schemas/ValidateLocalJob'
+        validateRemoteJob:
+          $ref: '#/components/schemas/ValidateRemoteJob'
+        deleteDipJob:
+          $ref: '#/components/schemas/DeleteDipJob'
+        cleanupSipsJob:
+          $ref: '#/components/schemas/CleanupSipsJob'
+    RetrieveBatchResponse:
+      properties:
+        ingestBatch:
+          $ref: 'shared-components.yml#/components/schemas/IngestBatch'
+      required:
+        - ingestBatch
+    RegisterIngestObjectRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+        externalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+        objectRootPath:
+          description: The path to the object root on disk
+          example: /data/processing/obj123
+          type: string
+      required:
+        - ingestId
+        - externalObjectId
+        - objectRootPath
+    RegisterIngestObjectResponse:
+      properties:
+        ingestObjectId:
+          $ref: 'shared-components.yml#/components/schemas/IngestObjectId'
+    RegisterIngestObjectFileRequest:
+      properties:
+        ingestObjectId:
+          $ref: 'shared-components.yml#/components/schemas/IngestObjectId'
+        filePath:
+          $ref: 'shared-components.yml#/components/schemas/FilePath'
+      required:
+        - ingestObjectId
+        - filePath
+    RegisterIngestObjectFileResponse:
+      properties:
+        ingestFileId:
+          $ref: 'shared-components.yml#/components/schemas/IngestFileId'
+    RegisterIngestObjectFileDetailsRequest:
+      properties:
+        ingestFileId:
+          $ref: 'shared-components.yml#/components/schemas/IngestFileId'
+        sha256Digest:
+          $ref: 'shared-components.yml#/components/schemas/Sha256Digest'
+        fileSize:
+          $ref: 'shared-components.yml#/components/schemas/FileSize'
+        formats:
+          description: The format of the file
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/FileFormat'
+        encoding:
+          description: The encoding of the file
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/FileEncoding'
+        validity:
+          description: The validity of the file
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/FileValidity'
+      required:
+        - ingestFileId
+        - sha256Digest
+        - fileSize
+    BatchObjectWithFiles:
+      description: An object within an Ingest Batch
+      type: object
+      properties:
+        ingestObjectId:
+          $ref: 'shared-components.yml#/components/schemas/IngestObjectId'
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+        externalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+        objectRootPath:
+          description: The path to the object root on disk
+          example: /data/processing/obj123
+          type: string
+        state:
+          $ref: 'shared-components.yml#/components/schemas/IngestObjectState'
+        internalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/InternalObjectId'
+        headPersistenceVersion:
+          $ref: 'shared-components.yml#/components/schemas/PersistenceVersion'
+        approverName:
+          description: The display name of the user who approved the object
+          type: string
+        approverAddress:
+          description: The address or id of the user who approved the object, should be a URI
+          example: person@example.com
+          type: string
+        files:
+          description: The files associated to the object
+          type: array
+          items:
+            $ref: '#/components/schemas/ObjectFile'
+    ObjectFile:
+      description: A file within an object within an Ingest Batch
+      type: object
+      properties:
+        filePath:
+          $ref: 'shared-components.yml#/components/schemas/FilePath'
+        sha256Digest:
+          $ref: 'shared-components.yml#/components/schemas/Sha256Digest'
+        fileSize:
+          $ref: 'shared-components.yml#/components/schemas/FileSize'
+    ObjectVersionState:
+      description: Describes the state of an object at a specific version
+      type: object
+      properties:
+        version:
+          $ref: 'shared-components.yml#/components/schemas/Version'
+        persistenceVersion:
+          $ref: 'shared-components.yml#/components/schemas/PersistenceVersion'
+        state:
+          description: The files in the version
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              sha256Digest:
+                $ref: 'shared-components.yml#/components/schemas/Sha256Digest'
+              fileSize:
+                $ref: 'shared-components.yml#/components/schemas/FileSize'
+    DescribeObjectVersionStatesResponse:
+      properties:
+        vault:
+          $ref: 'shared-components.yml#/components/schemas/Vault'
+        externalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+        versionStates:
+          description: List of all of the version states of the object
+          type: array
+          items:
+            $ref: '#/components/schemas/ObjectVersionState'
+      required:
+        - versionStates
+    CreateObjectVersionRequest:
+      properties:
+        objectId:
+          $ref: 'shared-components.yml#/components/schemas/InternalObjectId'
+        ingestObjectId:
+          $ref: 'shared-components.yml#/components/schemas/IngestObjectId'
+      required:
+        - objectId
+        - ingestObjectId
+    CreateObjectVersionResponse:
+      properties:
+        objectId:
+          $ref: 'shared-components.yml#/components/schemas/InternalObjectId'
+        version:
+          $ref: 'shared-components.yml#/components/schemas/Version'
+        objectVersionId:
+          $ref: 'shared-components.yml#/components/schemas/ObjectVersionId'
+    DeleteObjectVersionRequest:
+      properties:
+        objectVersionId:
+          $ref: 'shared-components.yml#/components/schemas/ObjectVersionId'
+      required:
+        - objectVersionId
+    FinalizeObjectVersionRequest:
+      properties:
+        objectVersionId:
+          $ref: 'shared-components.yml#/components/schemas/ObjectVersionId'
+        ingestObjectId:
+          $ref: 'shared-components.yml#/components/schemas/IngestObjectId'
+        persistenceVersion:
+          $ref: 'shared-components.yml#/components/schemas/PersistenceVersion'
+      required:
+        - objectVersionId
+        - persistenceVersion
+    ObjectVersionReplicatedRequest:
+      properties:
+        objectId:
+          $ref: 'shared-components.yml#/components/schemas/InternalObjectId'
+        persistenceVersion:
+          $ref: 'shared-components.yml#/components/schemas/PersistenceVersion'
+        dataStore:
+          $ref: 'shared-components.yml#/components/schemas/DataStore'
+        dataStoreKey:
+          description: The key the version is stored at in the datastore
+          type: string
+        sha256Digest:
+          description: The lowercase, hex encoded sha256 digest of the archive
+          type: string
+      required:
+        - objectVersionId
+        - dataStore
+        - dataStoreKey
+        - sha256Digest
+    RecordIngestEventRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+        externalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+        event:
+          $ref: 'shared-components.yml#/components/schemas/Event'
+      required:
+        - ingestId
+        - event
+    RecordPreservationEventRequest:
+      properties:
+        objectId:
+          $ref: 'shared-components.yml#/components/schemas/InternalObjectId'
+        event:
+          $ref: 'shared-components.yml#/components/schemas/Event'
+      required:
+        - objectId
+        - event
+    UpdateJobStateRequest:
+      properties:
+        jobId:
+          $ref: 'shared-components.yml#/components/schemas/JobId'
+        state:
+          $ref: 'shared-components.yml#/components/schemas/JobState'
+      required:
+        - jobId
+        - state
+    DeferJobRequest:
+      properties:
+        jobId:
+          $ref: 'shared-components.yml#/components/schemas/JobId'
+        nextAttemptTimestamp:
+          description: UTC timestamp when the next processing attempt will be made
+          example: '2018-12-27T20:50:09.189558Z'
+          type: string
+          format: date-time
+      required:
+        - jobId
+        - state
+    RetrieveBatchIngestResponse:
+      properties:
+        approvedObjects:
+          description: Objects that need to be ingested
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchObjectWithFiles'
+      required:
+        - approvedObjects
+    VersionStorageProblem:
+      properties:
+        persistenceVersion:
+          $ref: 'shared-components.yml#/components/schemas/PersistenceVersion'
+        problem:
+          $ref: 'shared-components.yml#/components/schemas/StorageProblemType'
+      required:
+        - persistenceVersion
+        - problem
+    SetObjectStorageProblemsRequest:
+      properties:
+        objectId:
+          $ref: 'shared-components.yml#/components/schemas/InternalObjectId'
+        dataStore:
+          $ref: 'shared-components.yml#/components/schemas/DataStore'
+        objectProblem:
+          $ref: 'shared-components.yml#/components/schemas/StorageProblemType'
+        versionProblems:
+          description: Storage problems for specific versions
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionStorageProblem'
+      required:
+        - objectId
+        - dataStore
+    RecordJobLogsRequest:
+      properties:
+        jobId:
+          $ref: 'shared-components.yml#/components/schemas/JobId'
+        logEntries:
+          description: Job log entries
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/LogEntry'
+    RetrieveNewInVersionFilesResponse:
+      properties:
+        files:
+          description: Files that were introduced into the object in the specified version
+          type: array
+          items:
+            $ref: '#/components/schemas/ObjectFile'
+      required:
+        - files
+    Outcome:
+      description: Indicates if the action was a success or a failure
+      example: SUCCESS
+      type: string
+      enum:
+        - SUCCESS
+        - FAILURE
+    BatchStartAnalysisRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+      required:
+        - ingestId
+    BatchCompleteAnalysisRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+        outcome:
+          $ref: '#/components/schemas/Outcome'
+      required:
+        - ingestId
+        - outcome
+    BatchStartRejectingRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+      required:
+        - ingestId
+    BatchCompleteRejectingRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+      required:
+        - ingestId
+    BatchStartIngestingRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+      required:
+        - ingestId
+    BatchCompleteIngestingRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+        outcome:
+          $ref: '#/components/schemas/Outcome'
+      required:
+        - ingestId
+        - outcome
+    BatchMarkDeletedRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+      required:
+        - ingestId
+    ObjectCompleteAnalysisRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+        externalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+        outcome:
+          $ref: '#/components/schemas/Outcome'
+      required:
+        - ingestId
+        - externalObjectId
+        - outcome
+    ObjectStartIngestingRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+        externalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+      required:
+        - ingestId
+        - externalObjectId
+    ObjectCompleteIngestingRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+        externalObjectId:
+          $ref: 'shared-components.yml#/components/schemas/ExternalObjectId'
+        outcome:
+          description: Indicates if the action was a success or a failure
+          example: SUCCESS
+          type: string
+          enum:
+            - SUCCESS
+            - FAILURE
+            - NO_CHANGE
+      required:
+        - ingestId
+        - externalObjectId
+        - outcome
+    ShouldDeleteBatchRequest:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+        sipPath:
+          description: The path to the SIP in the upload dir
+          example: /preservation/upload/sip.zip
+          type: string
+    ShouldDeleteBatchResponse:
+      properties:
+        ingestId:
+          $ref: 'shared-components.yml#/components/schemas/IngestId'
+        verdict:
+          description: Indicates if the batch should be kept or deleted
+          example: KEEP
+          type: string
+          enum:
+            - KEEP
+            - DELETE
+            - NOT_FOUND
+    GetObjectStorageProblemsResponse:
+      properties:
+        problems:
+          description: List of problems
+          type: array
+          items:
+            $ref: 'shared-components.yml#/components/schemas/ObjectStorageProblem'
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+security:
+  - basicAuth: []

@@ -1,0 +1,880 @@
+openapi: 3.0.0
+info:
+  title: Preservation Service Manager Shared API Components
+  version: 1.0.0
+paths:
+components:
+  parameters:
+    vaultInQuery:
+      in: query
+      name: vault
+      schema:
+        type: string
+      description: The vault an object is in
+      example: vault-name
+      required: true
+    persistenceVersionInPath:
+      in: path
+      name: persistenceVersion
+      schema:
+        type: string
+      description: The version identifier of the object version
+      example: v2
+      required: true
+    ingestIdInPath:
+      in: path
+      name: ingestId
+      schema:
+        type: integer
+        format: int64
+      description: The ID for the Ingest Batch
+      example: 10293
+      required: true
+    ingestIdInQuery:
+      in: query
+      name: ingestId
+      schema:
+        type: integer
+        format: int64
+      description: The ID for the Ingest Batch
+      example: 10293
+      required: true
+    objectVersionIdInPath:
+      in: path
+      name: objectVersionId
+      schema:
+        type: integer
+        format: int64
+      description: The internal ID of the preservation object version
+      example: 10293
+      required: true
+    internalObjectIdInPath:
+      in: path
+      name: internalObjectId
+      schema:
+        type: string
+      description: The internal ID of the object
+      example: urn:uuid:3c658673-38aa-4425-b931-2971c45256d3
+      required: true
+    internalObjectIdInQuery:
+      in: query
+      name: internalObjectId
+      schema:
+        type: string
+      description: The internal ID of the object
+      example: urn:uuid:3c658673-38aa-4425-b931-2971c45256d3
+      required: true
+    jobIdInPath:
+      in: path
+      name: jobId
+      schema:
+        type: integer
+        format: int64
+      description: The ID of the job
+      example: 10293
+      required: true
+    requestIdInPath:
+      in: path
+      name: requestId
+      schema:
+        type: integer
+        format: int64
+      description: The ID of the request
+      example: 10293
+      required: true
+    orgNameInPath:
+      in: path
+      name: orgName
+      schema:
+        type: string
+      description: The ID of the organization
+      example: organization-id
+      required: true
+    vaultInPath:
+      in: path
+      name: vault
+      schema:
+        type: string
+      description: The name of the vault
+      example: vault-name
+      required: true
+    externalObjectIdInQuery:
+      in: query
+      name: externalObjectId
+      schema:
+        type: string
+      description: The external ID of the object
+      example: 1711.dl/ZQ5WPGU2GKBFT8Q
+      required: true
+    filePathInQuery:
+      in: query
+      name: filePath
+      schema:
+        type: string
+      description: The object relative path of the file
+      example: path/to/file.txt
+      required: true
+    versionInQueryOptional:
+      in: query
+      name: version
+      schema:
+        type: integer
+        format: int32
+      description: The version of an object
+      example: 1
+      required: false
+    usernameInQueryOptional:
+      in: query
+      name: username
+      schema:
+        type: string
+      description: A user's username in the preservation system
+      required: false
+    orgNameInQueryOptional:
+      in: query
+      name: orgName
+      schema:
+        type: string
+      description: The ID of the organization
+      example: organization-id
+      required: false
+    statesInQueryOptional:
+      in: query
+      name: state
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            - RECEIVED
+            - ANALYZING
+            - ANALYSIS_FAILED
+            - PENDING_REVIEW
+            - PENDING_INGESTION
+            - PENDING_REJECTION
+            - INGESTING
+            - INGEST_FAILED
+            - REPLICATING
+            - REPLICATION_FAILED
+            - COMPLETE
+            - REJECTING
+            - REJECTED
+            - DELETED
+      explode: false
+      description: The state the batch is in
+      example: PENDING_REVIEW
+      required: false
+    vaultsInQueryOptional:
+      in: query
+      name: vault
+      schema:
+        type: array
+        items:
+          type: string
+      explode: false
+      description: The vault an object is in
+      example: vault-name
+      required: false
+    pageSizeInQueryOptional:
+      in: query
+      name: pageSize
+      schema:
+        type: integer
+      description: The number of results to include per page (default 20)
+      example: 20
+      required: false
+    pageInQueryOptional:
+      in: query
+      name: page
+      schema:
+        type: integer
+      description: The result page to retrieve, 0 indexed
+      example: 0
+      required: false
+    hasProblemsInQueryOptional:
+      in: query
+      name: hasProblems
+      schema:
+        type: string
+        enum:
+          - NONE
+          - WARNINGS
+          - ERRORS
+      description: Filter objects by the existence of errors or warnings. WARNINGS returns objects that only have warnings; ERRORS returns any object that has errors.
+      example: ERRORS
+      required: false
+  schemas:
+    IngestId:
+      description: The ID for the Ingest Batch
+      example: 10293
+      type: integer
+      format: int64
+    Vault:
+      description: The name of the vault
+      example: vault-name
+      type: string
+    VaultObject:
+      properties:
+        name:
+          $ref: '#/components/schemas/Vault'
+        description:
+          description: Additional information about the vault
+          example: Vault description with more details than the vault name
+          type: string
+    VaultPermissionsWithDescription:
+      properties:
+        vault:
+          $ref: '#/components/schemas/VaultObject'
+        permissions:
+          description: The permissions the user has in the vault
+          type: array
+          items:
+            $ref: '#/components/schemas/VaultPermission'
+    VaultPermissions:
+      properties:
+        vault:
+          $ref: '#/components/schemas/Vault'
+        permissions:
+          description: The permissions the user has in the vault
+          type: array
+          items:
+            $ref: '#/components/schemas/VaultPermission'
+    VaultPermission:
+      description: A vault permission
+      type: string
+      enum:
+        - READ
+        - WRITE
+    Username:
+      description: A user's username in the preservation system
+      type: string
+    ExternalObjectId:
+      description: The external ID of the object
+      example: 1711.dl/ZQ5WPGU2GKBFT8Q
+      type: string
+    InternalObjectId:
+      description: The internal ID of the object
+      example: urn:uuid:3c658673-38aa-4425-b931-2971c45256d3
+      type: string
+    IngestObjectId:
+      description: The ID of the object within the batch
+      example: 10293
+      type: integer
+      format: int64
+    ObjectVersionId:
+      description: The internal ID of a version of an object
+      example: 10293
+      type: integer
+      format: int64
+    JobId:
+      description: The id of a job
+      example: 10293
+      type: integer
+      format: int64
+    Version:
+      description: The version of an object
+      type: integer
+      format: int32
+      example: 1
+    PersistenceVersion:
+      description: The version identifier of the object version
+      example: v2
+      type: string
+    Sha256Digest:
+      description: The sha256 digest of the file
+      example: 1ff0a30eedd7819f4552179c94ea89ed03f5d1a4265fcd0f971ebe7bc17317cf
+      type: string
+    FileSize:
+      description: Size of the file in bytes
+      example: 1024
+      type: integer
+      format: int64
+    IngestBatchState:
+      description: The state of an Ingest Batch
+      type: string
+      # Update statesInQueryOptional as well
+      enum:
+        - RECEIVED
+        - ANALYZING
+        - ANALYSIS_FAILED
+        - PENDING_REVIEW
+        - PENDING_INGESTION
+        - PENDING_REJECTION
+        - INGESTING
+        - INGEST_FAILED
+        - REPLICATING
+        - REPLICATION_FAILED
+        - COMPLETE
+        - REJECTING
+        - REJECTED
+        - DELETED
+    IngestObjectState:
+      description: The state of an Ingest Object
+      type: string
+      enum:
+        - ANALYZING
+        - ANALYSIS_FAILED
+        - PENDING_REVIEW
+        - PENDING_INGESTION
+        - PENDING_REJECTION
+        - INGESTING
+        - INGESTED
+        - INGEST_FAILED
+        - NO_CHANGE
+        - REPLICATING
+        - REPLICATED
+        - REPLICATION_FAILED
+        - COMPLETE
+        - REJECTING
+        - REJECTED
+        - DELETED
+    PreservationObjectState:
+      description: The state of a Preservation Object
+      type: string
+      enum:
+        - ACTIVE
+        - DELETED
+    JobState:
+      description: The state of a job
+      type: string
+      enum:
+        - PENDING
+        - EXECUTING
+        - FAILED
+        - COMPLETE
+        - CANCELLED
+    JobType:
+      description: Type of job
+      type: string
+      enum:
+        - RETRIEVE_OBJECTS
+        - REPLICATE
+        - RESTORE
+        - FINALIZE_RESTORE
+        - VALIDATE_LOCAL
+        - PROCESS_BATCH
+        - VALIDATE_REMOTE
+        - DELETE_DIP
+        - CLEANUP_SIPS
+    DataStore:
+      description: A data store location
+      type: string
+      enum:
+        - IBM_COS
+        - GLACIER
+    StorageProblemType:
+      description: Type of problem identified in the storage layer
+      type: string
+      enum:
+        - NONE
+        - MISSING
+        - CORRUPT
+    OrgAuthority:
+      description: A user's authority within an organization
+      type: string
+      enum:
+        - BASIC_OPS
+        - ADMIN_OPS
+    Role:
+      description: A user's role within an organization
+      type: string
+      enum:
+        - STANDARD
+        - ADMIN
+    User:
+      description: Details about a user
+      type: object
+      properties:
+        username:
+          $ref: '#/components/schemas/Username'
+        displayName:
+          $ref: '#/components/schemas/UserDisplayName'
+        enabled:
+          $ref: '#/components/schemas/UserEnabled'
+        userType:
+          $ref: '#/components/schemas/UserType'
+    OrgUser:
+      description: Details about a user in an organization
+      type: object
+      properties:
+        username:
+          $ref: '#/components/schemas/Username'
+        displayName:
+          $ref: '#/components/schemas/UserDisplayName'
+        role:
+          $ref: '#/components/schemas/Role'
+        enabledInOrg:
+          $ref: '#/components/schemas/UserEnabled'
+        userType:
+          $ref: '#/components/schemas/UserType'
+    UserDisplayName:
+      description: The user's display name
+      type: string
+    UserEnabled:
+      description: Indicates if the user is enabled
+      example: true
+      type: boolean
+    UserType:
+      description: Indicates the type of user
+      example: GENERAL_USER
+      type: string
+      enum:
+        - GENERAL_USER
+        - PROGRAMMATIC_USER
+        - SERVICE_ADMIN
+    VaultUser:
+      description: Details about a user in a vault
+      type: object
+      properties:
+        username:
+          $ref: '#/components/schemas/Username'
+        displayName:
+          $ref: '#/components/schemas/UserDisplayName'
+        enabledInOrg:
+          $ref: '#/components/schemas/UserEnabled'
+        userType:
+          $ref: '#/components/schemas/UserType'
+        permissions:
+          description: The permissions the user has in the vault
+          type: array
+          items:
+            $ref: '#/components/schemas/VaultPermission'
+    OrgName:
+      description: The ID of the organization
+      example: organization-id
+      type: string
+    OrgDisplayName:
+      description: The display name of the organization
+      example: Organization Name
+      type: string
+    ContactName:
+      description: The primary contact for an organization
+      type: string
+    ContactEmail:
+      description: The email of the primary contact for an organization
+      example: test@example.com
+      type: string
+    ContactPhone:
+      description: The phone number for the primary contact for an organization
+      example: 555-555-5555
+      type: string
+    FilePath:
+      description: The object relative path of the file
+      example: path/to/file.txt
+      type: string
+    IngestFileId:
+      description: The ID of the file
+      example: 10293
+      type: integer
+      format: int64
+    ReviewedBy:
+      description: The username of the user who approved/rejected the batch object
+      type: string
+    AnalysisErrors:
+      description: Indicates if there were errors during analysis
+      example: true
+      type: boolean
+    AnalysisWarnings:
+      description: Indicates if there were warnings during analysis
+      example: true
+      type: boolean
+    IngestBatchSummary:
+      description: Ingest Batch summary
+      type: object
+      properties:
+        ingestId:
+          $ref: '#/components/schemas/IngestId'
+        orgName:
+          $ref: '#/components/schemas/OrgName'
+        vault:
+          $ref: '#/components/schemas/Vault'
+        createdBy:
+          description: The username of the user who submitted the batch
+          type: string
+        reviewedBy:
+          $ref: '#/components/schemas/ReviewedBy'
+        state:
+          $ref: '#/components/schemas/IngestBatchState'
+        originalFilename:
+          description: The name of the file as uploaded
+          example: bag.zip
+          type: string
+        fileSize:
+          description: Bag size in bytes
+          example: 1024
+          type: integer
+          format: int64
+        hasAnalysisErrors:
+          $ref: '#/components/schemas/AnalysisErrors'
+        hasAnalysisWarnings:
+          $ref: '#/components/schemas/AnalysisWarnings'
+        receivedTimestamp:
+          description: UTC timestamp when the batch was received
+          example: '2018-12-27T20:50:06.907193Z'
+          type: string
+          format: date-time
+        updatedTimestamp:
+          description: UTC timestamp when the batch was last updated
+          example: '2018-12-27T20:50:09.189558Z'
+          type: string
+          format: date-time
+      required:
+        - ingestId
+        - orgName
+        - vault
+        - createdBy
+        - state
+        - receivedTimestamp
+    IngestBatch:
+      description: Ingest Batch details
+      type: object
+      properties:
+        ingestId:
+          $ref: '#/components/schemas/IngestId'
+        orgName:
+          $ref: '#/components/schemas/OrgName'
+        vault:
+          $ref: '#/components/schemas/Vault'
+        createdBy:
+          description: The username of the user who submitted the batch
+          type: string
+        reviewedBy:
+          $ref: '#/components/schemas/ReviewedBy'
+        state:
+          $ref: '#/components/schemas/IngestBatchState'
+        originalFilename:
+          description: The name of the file as uploaded
+          example: bag.zip
+          type: string
+        filePath:
+          description: Path the batch's archive on disk
+          example: /var/tmp/bag.zip
+          type: string
+        fileSize:
+          description: Bag size in bytes
+          example: 1024
+          type: integer
+          format: int64
+        hasAnalysisErrors:
+          $ref: '#/components/schemas/AnalysisErrors'
+        hasAnalysisWarnings:
+          $ref: '#/components/schemas/AnalysisWarnings'
+        receivedTimestamp:
+          description: UTC timestamp when the batch was received
+          example: '2018-12-27T20:50:06.907193Z'
+          type: string
+          format: date-time
+        updatedTimestamp:
+          description: UTC timestamp when the batch was last updated
+          example: '2018-12-27T20:50:09.189558Z'
+          type: string
+          format: date-time
+      required:
+        - ingestId
+        - orgName
+        - vault
+        - type
+        - createdBy
+        - state
+        - receivedTimestamp
+    IngestBatchObject:
+      description: An object within an Ingest Batch
+      type: object
+      properties:
+        ingestId:
+          $ref: '#/components/schemas/IngestId'
+        vault:
+          $ref: '#/components/schemas/Vault'
+        externalObjectId:
+          $ref: '#/components/schemas/ExternalObjectId'
+        version:
+          $ref: '#/components/schemas/Version'
+        state:
+          $ref: '#/components/schemas/IngestObjectState'
+        reviewedBy:
+          $ref: '#/components/schemas/ReviewedBy'
+        hasAnalysisErrors:
+          $ref: '#/components/schemas/AnalysisErrors'
+        hasAnalysisWarnings:
+          $ref: '#/components/schemas/AnalysisWarnings'
+      required:
+        - ingestId
+        - vault
+        - externalObjectId
+        - state
+    ObjectFile:
+      description: A file within an object
+      type: object
+      properties:
+        filePath:
+          $ref: '#/components/schemas/FilePath'
+        sha256Digest:
+          $ref: '#/components/schemas/Sha256Digest'
+        fileSize:
+          $ref: '#/components/schemas/FileSize'
+        formats:
+          description: Array of file formats attributed to the file
+          type: array
+          items:
+            $ref: '#/components/schemas/FileFormat'
+        encoding:
+          description: Array of file encodings attributed to the file
+          type: array
+          items:
+            $ref: '#/components/schemas/FileEncoding'
+        validity:
+          description: Array of file validities attributed to the file
+          type: array
+          items:
+            $ref: '#/components/schemas/FileValidity'
+      required:
+        - filePath
+        - sha256Digest
+    FileFormat:
+      description: File format of a file
+      type: object
+      properties:
+        formatRegistry:
+          $ref: '#/components/schemas/FormatRegistry'
+        format:
+          $ref: '#/components/schemas/FileFormatName'
+        source:
+          $ref: '#/components/schemas/IdentificationSource'
+      required:
+        - formatRegistry
+        - format
+        - source
+    FormatRegistry:
+      description: Registry of format identifiers
+      type: string
+      enum:
+        - MIME
+        - PRONOM
+    FileFormatName:
+      description: The ID of the file format within the registry
+      example: application/xml
+      type: string
+    FileEncodingName:
+      description: The file encoding
+      example: utf-8
+      type: string
+    FileValid:
+      description: Indicates if the file is valid
+      example: true
+      type: boolean
+    FileWellFormed:
+      description: Indicates if the file is well formed
+      example: true
+      type: boolean
+    IdentificationSource:
+      description: The source of the identification
+      example: USER when specified by the user; otherwise tool id, eg Droid-6.4 when identified by Droid
+      type: string
+    FileEncoding:
+      description: Encoding for a file
+      type: object
+      properties:
+        encoding:
+          $ref: '#/components/schemas/FileEncodingName'
+        source:
+          $ref: '#/components/schemas/IdentificationSource'
+      required:
+        - encoding
+        - source
+    FileValidity:
+      description: Validity of a file
+      type: object
+      properties:
+        valid:
+          $ref: '#/components/schemas/FileValid'
+        wellFormed:
+          $ref: '#/components/schemas/FileWellFormed'
+        source:
+          $ref: '#/components/schemas/IdentificationSource'
+      required:
+        - source
+    LogLevel:
+      description: Log level
+      type: string
+      enum:
+        - INFO
+        - WARN
+        - ERROR
+    LogMessage:
+      description: Log entry text
+      example: Something went wrong
+      type: string
+    LogCreatedTimestamp:
+      description: The timestamp the log entry was created
+      example: 2020-03-13T19:44:22.198+0000
+      type: string
+      format: date-time
+    EventType:
+      description: The type of event
+      type: string
+      enum:
+        - RECEIVE_BAG
+        - VIRUS_SCAN_BAG
+        - VALIDATE_BAG
+        - IDENTIFY_OBJ
+        - IDENTIFY_FILE_FORMAT
+        - REVIEW_OBJ
+        - REVIEW_BATCH
+        - WRITE_OBJ_LOCAL
+        - CREATE_OBJ
+        - UPDATE_OBJ
+        - UPDATE_OBJ_METADATA
+        - REPLICATE_OBJ_VERSION
+        - COMPLETE_OBJ_INGEST
+        - COMPLETE_BATCH_INGEST
+        - DELETE_BAG
+        - VALIDATE_OBJ_LOCAL
+        - VALIDATE_OBJ_VERSION_LOCAL
+        - VALIDATE_OBJ_VERSION_REMOTE
+        - RESTORE_OBJ_VERSION
+        - PREPARE_DIP
+        - DELETE_OBJ
+    EventOutcome:
+      description: The outcome of an event
+      type: string
+      enum:
+        - SUCCESS
+        - FAILURE
+        - SUCCESS_WITH_WARNINGS
+        - APPROVED
+        - REJECTED
+        - NOT_EXECUTED
+    EventUser:
+      description: The username of the user responsible for the event
+      type: string
+    EventAgent:
+      description: The software component responsible for the event
+      example: preservation-worker-1.0.0
+      type: string
+    EventTimestamp:
+      description: The timestamp the event occurred
+      example: 2020-03-13T19:44:22.198+0000
+      type: string
+      format: date-time
+    Event:
+      properties:
+        username:
+          $ref: '#/components/schemas/EventUser'
+        agent:
+          $ref: '#/components/schemas/EventAgent'
+        type:
+          $ref: '#/components/schemas/EventType'
+        outcome:
+          $ref: '#/components/schemas/EventOutcome'
+        eventTimestamp:
+          $ref: '#/components/schemas/EventTimestamp'
+        logs:
+          description: Any log entries associated with the event
+          type: array
+          items:
+            $ref: '#/components/schemas/LogEntry'
+    LogEntry:
+      properties:
+        level:
+          $ref: '#/components/schemas/LogLevel'
+        message:
+          $ref: '#/components/schemas/LogMessage'
+        createdTimestamp:
+          $ref: '#/components/schemas/LogCreatedTimestamp'
+    JobDetails:
+      properties:
+        jobId:
+          $ref: '#/components/schemas/JobId'
+        type:
+          $ref: '#/components/schemas/JobType'
+        state:
+          $ref: '#/components/schemas/JobState'
+        receivedTimestamp:
+          description: Timestamp the job was created
+          example: 2020-03-13T19:44:22.198+0000
+          type: string
+          format: date-time
+        updatedTimestamp:
+          description: Timestamp the job was updated
+          example: 2020-03-13T19:44:22.198+0000
+          type: string
+          format: date-time
+    Page:
+      type: integer
+      description: The page number of this page, zero indexed
+      example: 0
+    TotalPages:
+      type: integer
+      description: The total number of pages
+      example: 10
+    TotalResults:
+      type: integer
+      description: The total number of results found
+      example: 100
+    RemoteVersionCheck:
+      properties:
+        location:
+          $ref: '#/components/schemas/DataStore'
+        lastCheck:
+          description: Timestamp of last validation check
+          example: 2020-03-13T19:44:22.198+0000
+          type: string
+          format: date-time
+    ErrorResponse:
+      properties:
+        timestamp:
+          description: Timestamp when the error occurred
+          example: 2020-03-13T19:44:22.198+0000
+          type: string
+          format: date-time
+        requestId:
+          description: UUID assigned to the request
+          example: 6037de0a4b2e4611956da540938a00ff
+          type: string
+        status:
+          description: HTTP status code
+          example: 500
+          type: integer
+          format: int32
+        error:
+          description: Application classification of the error
+          type: string
+        message:
+          description: Description of the error
+          example: Invalid input
+          type: string
+        path:
+          description: Request path
+          example: /api/ingest/bag
+          type: string
+      required:
+        - timestamp
+        - requestId
+        - status
+        - error
+        - message
+        - path
+    ObjectStorageProblem:
+      properties:
+        dataStore:
+          $ref: '#/components/schemas/DataStore'
+        problem:
+          $ref: '#/components/schemas/StorageProblemType'
+        persistenceVersion:
+          $ref: '#/components/schemas/PersistenceVersion'
+        reportedTimestamp:
+          description: Timestamp the storage problem was identified
+          example: 2020-03-13T19:44:22.198+0000
+          type: string
+          format: date-time
+      required:
+        - dataStore
+        - problem
+        - reportedTimestamp
+  responses:
+    ErrorResponse:
+      description: Response returned when an operation fails.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
